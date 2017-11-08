@@ -28,7 +28,8 @@ class mctrack(recoBase3D):
         _mc_tracks = event.GetMCTracks()
 
 
-
+        _running_min = None
+        _running_max = None
         for track in _mc_tracks:
 
             # construct a line for this track:
@@ -45,10 +46,24 @@ class mctrack(recoBase3D):
                 i+= 1
 
             pts = numpy.vstack([x,y,z]).transpose()
-            print pts
+
+            _this_min = numpy.min(pts, axis=0)
+            _this_max = numpy.max(pts, axis=0)
+
+            if _running_min is None:
+                _running_min = _this_min
+            else:
+                _running_min = numpy.minimum(_this_min, _running_min)
+            if _running_max is None:
+                _running_max = _this_max
+            else:
+                _running_max = numpy.maximum(_this_max, _running_max)
+
+
             pen = pg.mkPen((255,0,0), width=3)
             line = gl.GLLinePlotItem(pos=pts,color=(255,255,0,255))
             view_manager.getView().addItem(line)
             self._drawnObjects.append(line)
 
-
+        self._min_coords = _running_min
+        self._max_coords = _running_max
