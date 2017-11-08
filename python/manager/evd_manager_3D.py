@@ -1,6 +1,6 @@
 from pyqtgraph.Qt import QtCore
 import datatypes
-
+import numpy
 from evd_manager_base import evd_manager_base
 from event_meta import event_meta3D
 
@@ -22,20 +22,19 @@ class evd_manager_3D(evd_manager_base):
 
     # this function is meant for the first request to draw an object or
     # when the producer changes
-    def redrawProduct(self, product, producer, view_manager):
+    def redrawProduct(self, product, view_manager, draw):
         
         # print "Received request to redraw ", product, " by ",producer
         # First, determine if there is a drawing process for this product:  
         
-        if producer is None:
+        if draw is False:
             if product in self._drawnClasses:
                 self._drawnClasses[product].clearDrawnObjects(view_manager)
                 self._drawnClasses.pop(product)
             return
         if product in self._drawnClasses:
-            self._drawnClasses[product].setProducer(producer)
             self._drawnClasses[product].clearDrawnObjects(view_manager)
-            self._drawnClasses[product].drawObjects(view_manager, self._io_manager, self.meta())
+            self._drawnClasses[product].drawObjects(view_manager, self._Event, self.meta())
             return
 
         # Now, draw the new product
@@ -44,11 +43,10 @@ class evd_manager_3D(evd_manager_base):
             # instantiate it
             drawingClass=self._drawableItems.getDict()[product]()
 
-            drawingClass.setProducer(producer)
             self._drawnClasses.update({product: drawingClass})
 
             # Need to process the event
-            drawingClass.drawObjects(view_manager, self._io_manager, self.meta())
+            drawingClass.drawObjects(view_manager, self._Event, self.meta())
 
     def getProducers(self, product):
         return ["mc"]
@@ -66,7 +64,7 @@ class evd_manager_3D(evd_manager_base):
         # self.drawTruth()
         for item in order:
             if item in self._drawnClasses:
-                self._drawnClasses[item].drawObjects(view_manager, self._io_manager, self.meta())
+                self._drawnClasses[item].drawObjects(view_manager, self._Event, self.meta())
 
 
     def refreshColors(self, view_manager):
@@ -74,3 +72,20 @@ class evd_manager_3D(evd_manager_base):
         for item in order:
             if item in self._drawnClasses:
                 self._drawnClasses[item].refresh(view_manager)
+
+    def getMinMaxCoords(self):
+        if len(self._drawnClasses) == 0:
+            return [numpy.asarray([self.meta().min_x(), 
+                     self.meta().min_y(),
+                     self.meta().min_z()]),
+                    numpy.asarray([self.meta().max_x(), 
+                     self.meta().max_y(),
+                     self.meta().max_z()])]
+        else:
+            mins = []
+            maxs = []
+            for name, _cls in self._drawnClasses.iteritems():
+                mins.append(_cls.min())
+                maxs.append(_cls.max())
+
+            return numpy.min(mins, axis=0), numpy.max(maxs, axis=0)

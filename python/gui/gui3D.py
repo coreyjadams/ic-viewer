@@ -60,7 +60,6 @@ class gui3D(QtGui.QWidget):
     self._runLabel.setText(runLabel)
     # subrunLabel = "Subrun: " + str(self._event_manager.subrun())
     # self._subrunLabel.setText(subrunLabel)
-    self.metaChanged(self._event_manager.meta())
     self._event_manager.drawFresh(self._view_manager)
     
 
@@ -181,9 +180,9 @@ class gui3D(QtGui.QWidget):
   def getDrawingControlButtons(self):
 
     # Button to set range to max
-    self._maxRangeButton = QtGui.QPushButton("Max Range")
-    self._maxRangeButton.setToolTip("Set the range of the viewers to show the whole event")
-    self._maxRangeButton.clicked.connect(self._view_manager.setRangeToMax)
+    self._autoRangeButton = QtGui.QPushButton("Auto Range")
+    self._autoRangeButton.setToolTip("Set the range of the viewers to show the whole event")
+    self._autoRangeButton.clicked.connect(self.autoRangeWorker)
 
 
     # add a box to restore the drawing defaults:
@@ -294,7 +293,7 @@ class gui3D(QtGui.QWidget):
 
     self._drawingControlBox = QtGui.QVBoxLayout()
     self._drawingControlBox.addWidget(self._restoreDefaults)
-    self._drawingControlBox.addWidget(self._maxRangeButton)
+    self._drawingControlBox.addWidget(self._autoRangeButton)
     self._drawingControlBox.addLayout(self._cameraControlLayout)
 
     self._drawingControlBox.addLayout(self._cameraCenterLayout)
@@ -321,6 +320,19 @@ class gui3D(QtGui.QWidget):
     # self.updateCameraInfo(cameraPos=QtGui.QVector3D(x,y,z))
     self._view_manager.setCameraPosition(pos = (x,y,z) )
 
+  def autoRangeWorker(self):
+    # Get the list of min/max coordinates:
+    _min, _max = self._event_manager.getMinMaxCoords()
+    _ctr = 0.5*(_min + _max)
+    _diag = (_max - _min) * np.asarray((1.5, 1.5, 1.0))
+    self._view_manager.setCenter(_ctr)
+    self._view_manager.setCameraPosition(_ctr + _diag)
+    # self._view_manager.setCenter((0.0,0.0,0.0))
+    # self._view_manager.setCameraPosition(1.5*(_max - _min))
+    # # Move the center of the camera to the center of the view:
+    # _ctr = 0.5*(_min + _max)
+    # print _ctr
+    # self._view_manager.pan(_ctr[0], _ctr[1], _ctr[2])
 
   # def goToPresetCameraPosition(self):
   #   if self.sender() == self._presetUButton:
@@ -335,7 +347,7 @@ class gui3D(QtGui.QWidget):
 
 
   def restoreDefaultsWorker(self):
-    self._view_manager.restoreDefaults()
+    # self._view_manager.restoreDefaults()
     self._view_manager.setRangeToMax()
     
   # This function prepares the quit buttons layout and returns it
@@ -476,7 +488,6 @@ class gui3D(QtGui.QWidget):
     self.setWindowTitle('Event Display')    
     self.setFocus()
     self.show()
-    self._view_manager.setRangeToMax()
 
   def keyPressEvent(self,e):
     if e.key() == QtCore.Qt.Key_N:
@@ -496,9 +507,7 @@ class gui3D(QtGui.QWidget):
     # if e.key() == QtCore.Qt.Key_H:
   #     self._dataListsAndLabels['Hits'].setFocus()
 
-    if e.key() == QtCore.Qt.Key_R:
-      self.setRangeToMax()
-      return
+
 
     super(gui3D, self).keyPressEvent(e)
 

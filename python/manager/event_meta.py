@@ -8,14 +8,14 @@ class event_meta3D(object):
         self._x_min   = 0.0
         self._y_min   = 0.0
         self._z_min   = 0.0
-        self._x_max   = 48.
-        self._y_max   = 48.
-        self._z_max   = 60.
+        self._x_max   = 480.
+        self._y_max   = 480.
+        self._z_max   = 600.
         self._y_n_pixels = 48.
         self._x_n_pixels = 48.
         self._z_n_pixels = 60.
-        self._size_voxel_x = 1
-        self._size_voxel_y = 1
+        self._size_voxel_x = 10
+        self._size_voxel_y = 10
         self._size_voxel_z = 10
 
 

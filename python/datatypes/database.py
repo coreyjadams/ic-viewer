@@ -1,5 +1,5 @@
 # from ROOT import evd
-
+import numpy
 
 # These classes provide the basic interfaces for drawing objects
 # It's meant to be inherited from for specific instances
@@ -49,30 +49,7 @@ class dataBase(object):
         self._producerName = name
 
 
-# Reco base, all reco objects must inherit from this
-class recoBase(dataBase):
 
-    """docstring for recoBase"""
-
-    def __init__(self):
-        super(recoBase, self).__init__()
-        self._drawnObjects = []
-        self._process = None
-
-    def clearDrawnObjects(self, view_manager):
-        for plane, view in view_manager.getViewPorts().iteritems():
-            if len(self._drawnObjects) > plane:
-                for item in self._drawnObjects[plane]:
-                    view._plot.removeItem(item)
-
-        # clear the list:
-        self._drawnObjects = []
-
-    def getDrawnObjects(self):
-        return self._drawnObjects
-
-    def drawObjects(self, view_manager):
-        pass
 
 class recoBase3D(dataBase):
 
@@ -81,7 +58,14 @@ class recoBase3D(dataBase):
     def __init__(self):
         super(recoBase3D, self).__init__()
         self._drawnObjects = []
+        self._min_coords = numpy.asarray((0,0,0))
+        self._max_coords = numpy.asarray((0,0,0))
 
+    def min(self):
+        return self._min_coords
+    
+    def max(self):
+        return self._max_coords
 
     def clearDrawnObjects(self, view_manager):
         view = view_manager.getView()

@@ -23,6 +23,8 @@ class viewport3D(gl.GLViewWidget):
         # add an image item which handles drawing (and refreshing) the image
         self.setBackgroundColor((0,0,0,255))
 
+        self._dims = None
+
         self._background_items = []
         
 
@@ -31,10 +33,12 @@ class viewport3D(gl.GLViewWidget):
 
     def updateMeta(self,meta):
 
-        _len_x = meta.max_x() - meta.min_x()
-        _len_y = meta.max_y() - meta.min_y()
-        _len_z = meta.max_z() - meta.min_z()
+        _len_x = meta.dim_x()
+        _len_y = meta.dim_y()
+        _len_z = meta.dim_z()
     
+        self._dims = [_len_x, _len_y, _len_z]
+
         self.setCenter((0,0,0))
     
         for _item in self._background_items:
@@ -51,15 +55,18 @@ class viewport3D(gl.GLViewWidget):
         # Add a set of grids along x, y, z:
         self._xy_grid = gl.GLGridItem()
         self._xy_grid.setSize(x=_len_x, y=_len_y, z=0.0)
+        self._xy_grid.setSpacing(x=meta.size_voxel_x(), y=meta.size_voxel_y(), z=0.0)
         self._xy_grid.translate(_len_x*0.5, _len_y * 0.5, 0.0)
-        # self._xy_grid.setSize(x=_len_x, y=_len_y, z=0.0)
-        # self._x_grid.setSize(x=self._meta.MaxX(), y=self._meta.MaxY(), z=self._meta.MaxZ())
+
         self._yz_grid = gl.GLGridItem()
         self._yz_grid.setSize(x=_len_z, y=_len_y)
+        self._yz_grid.setSpacing(x=meta.size_voxel_x(), y=meta.size_voxel_y(), z=0.0)
         self._yz_grid.rotate(-90, 0, 1, 0)
         self._yz_grid.translate(0, _len_y*0.5, _len_z*0.5)
+
         self._xz_grid = gl.GLGridItem()
         self._xz_grid.setSize(x=_len_x, y=_len_z)
+        self._xz_grid.setSpacing(x=meta.size_voxel_x(), y=meta.size_voxel_y(), z=0.0)
         self._xz_grid.rotate(90, 1, 0, 0)
         self._xz_grid.translate(_len_x*0.5, 0, _len_z*0.5)
     
@@ -72,8 +79,9 @@ class viewport3D(gl.GLViewWidget):
         self._background_items.append(self._yz_grid)
         self._background_items.append(self._xz_grid)
     
-        # Move the center of the camera to the center of the view:
-        self.pan(_len_x*0.5, _len_y * 0.5, _len_z*0.5)
+    def dims(self):
+        return self._dims
+
 
     def setCenter(self, center):
         if len(center) != 3:
@@ -141,6 +149,7 @@ class viewport3D(gl.GLViewWidget):
             if distance != 0:
                 elevation = math.asin(Z / distance)
             else:
+                print Z
                 elevation = math.copysign(Z)
             azimuth *= 180./math.pi
             elevation *= 180./math.pi

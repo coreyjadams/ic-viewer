@@ -98,16 +98,16 @@ class evd_manager_base(QtCore.QObject):
 
             # Temporary, listing available things:
             # print "GetEnergy size: {}".format(self._Event.GetEnergy().size())
-            print "GetHits size: {}".format(self._Event.GetHits(gate.SIPM).size())
-            print "GetHitMaps size: {}".format(self._Event.GetHitMaps(gate.SIPM).size())
-            print "GetClusters size: {}".format(self._Event.GetClusters(gate.SIPM).size())
-            print "GetTracks size: {}".format(self._Event.GetTracks(gate.SIPM).size())
+            print "GetHits size: {}".format(self._Event.GetHits().size())
+            print "GetHitMaps size: {}".format(self._Event.GetHitMaps().size())
+            print "GetClusters size: {}".format(self._Event.GetClusters().size())
+            print "GetTracks size: {}".format(self._Event.GetTracks().size())
             print "GetSignals size: {}".format(self._Event.GetSignals().size())
-            print "GetParticles size: {}".format(self._Event.GetParticles(gate.SIPM).size())
-            print "GetMCHits size: {}".format(self._Event.GetMCHits(gate.SIPM).size())
-            print "GetMCSensHits size: {}".format(self._Event.GetMCSensHits(gate.SIPM).size())
-            print "GetMCTracks size: {}".format(self._Event.GetMCTracks(gate.SIPM).size())
-            print "GetMCParticles size: {}".format(self._Event.GetMCParticles(gate.SIPM).size())
+            print "GetParticles size: {}".format(self._Event.GetParticles().size())
+            print "GetMCHits size: {}".format(self._Event.GetMCHits().size())
+            print "GetMCSensHits size: {}".format(self._Event.GetMCSensHits().size())
+            print "GetMCTracks size: {}".format(self._Event.GetMCTracks().size())
+            print "GetMCParticles size: {}".format(self._Event.GetMCParticles().size())
             print
             self.eventChanged.emit()
         else:

@@ -10,7 +10,7 @@ from manager import evd_manager_3D
 from recobox import recoBox
 
 # Inherit the basic gui to extend it
-# override the gui to give the lariat display special features:
+# override the gui to give the display special features:
 
 
 class evdgui3D(gui3D):
@@ -29,6 +29,9 @@ class evdgui3D(gui3D):
     # override the initUI function to change things:
     def initUI(self):
         super(evdgui3D, self).initUI()
+        self.metaChanged(self._event_manager.meta())
+        self._view_manager.setRangeToMax()
+
         # Change the name of the labels for lariat:
         self.update()
 
@@ -58,19 +61,27 @@ class evdgui3D(gui3D):
         # self._eastLayout.addWidget(self._paramsDrawBox)
         # self._eastLayout.addStretch(1)
 
+        # In this case, many things are not made with different producers
+        # but just exist.  So use check boxes to toggle them on and off.
+
         # Now we get the list of items that are drawable:
         drawableProducts = self._event_manager.getDrawableProducts()
-        print drawableProducts
-        self._listOfRecoBoxes = []
+
         for product in drawableProducts:
-            thisBox = recoBox(self,
-                              product,
-                              drawableProducts[product],
-                              self._event_manager.getProducers(
-                                  drawableProducts[product]))
-            self._listOfRecoBoxes.append(thisBox)
-            thisBox.activated[str].connect(self.recoBoxHandler)
+            thisBox = QtGui.QCheckBox(product)
+            thisBox.stateChanged.connect(self.checkBoxHandler)
             self._eastLayout.addWidget(thisBox)
+
+        self._listOfRecoBoxes = []
+        # for product in drawableProducts:
+        #     thisBox = recoBox(self,
+        #                       product,
+        #                       drawableProducts[product],
+        #                       self._event_manager.getProducers(
+        #                           drawableProducts[product]))
+        #     self._listOfRecoBoxes.append(thisBox)
+        #     thisBox.activated[str].connect(self.recoBoxHandler)
+        #     self._eastLayout.addWidget(thisBox)
 
         self._eastLayout.addStretch(2)
 
@@ -95,3 +106,15 @@ class evdgui3D(gui3D):
             return
         else:
             self._event_manager.redrawProduct(sender.name(), text, self._view_manager)
+
+
+    def checkBoxHandler(self, state):
+        sender = self.sender()
+        if not sender.isChecked():
+            print "Unchecked"
+            self._event_manager.redrawProduct(str(sender.text()), self._view_manager, draw=False)
+            return
+        else:
+            print "checked"
+            self._event_manager.redrawProduct(str(sender.text()), self._view_manager, draw=True)
+

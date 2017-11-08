@@ -3,7 +3,8 @@
 import collections
 
 import pyqtgraph.opengl as gl
-from sparse3d import sparse3d
+from mchit import mchit
+from mctrack import mctrack
 
 class drawableItems3D(object):
 
@@ -14,6 +15,8 @@ class drawableItems3D(object):
         super(drawableItems3D, self).__init__()
         # items are stored as pointers to the classes (not instances)
         self._drawableClasses = collections.OrderedDict()
+        self._drawableClasses.update({'MCHits' : mchit})
+        self._drawableClasses.update({'MCTracks' : mctrack})
         # self._drawableClasses.update({'sparse3d': sparse3d})
         # self._drawableClasses.update({'SiPM MCHits': sipmmchit})
 

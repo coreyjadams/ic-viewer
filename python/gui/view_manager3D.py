@@ -3,12 +3,12 @@ from viewport3D import viewport3D
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph as pg
 
-colorMap = {'ticks': [(1, (151, 30, 22, 100)),
-                      (0.791, (0, 181, 226, 100)),
-                      (0.645, (76, 140, 43, 100)),
-                      (0.47, (0, 206, 24, 100)),
-                      (0.33333, (254, 209, 65, 100)),
-                      (0, (255, 255, 255, 100))],
+colorMap = {'ticks': [(1, (151, 30, 22, 200)),
+                      (0.791, (0, 181, 226, 200)),
+                      (0.645, (76, 140, 43, 200)),
+                      (0.47, (0, 206, 24, 200)),
+                      (0.33333, (254, 209, 65, 200)),
+                      (0, (255, 255, 255, 200))],
             'mode': 'rgb'}
 
 class view_manager3D(QtCore.QObject):
@@ -77,7 +77,11 @@ class view_manager3D(QtCore.QObject):
 
 
     def setRangeToMax(self):
-        pass
+        dims = self._view.dims()
+        self.setCenter((0.0,0.0,0.0))
+        self.setCameraPosition((1.5*dims[0], 1.5*dims[1], 1.0*dims[2]))
+        # Move the center of the camera to the center of the view:
+        self._view.pan(dims[0]*0.5, dims[1] * 0.5, dims[2]*0.5)
 
     def getView(self):
         return self._view
