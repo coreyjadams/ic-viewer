@@ -1,0 +1,14 @@
+This repository requires: PyQt5, pyqtgraph, and PyOpenGL.  (PyQt4 is ok too).  The version of PyQt5 installed with conda appears to have a bug, but if you have set up an environment with IC you can get the necessary dependancies like so:
+
+pip install pyqt5==5.7.1
+pip install pyqtgraph
+pip install PyOpenGL
+
+Then, source the setup script here (setup_evd.sh).
+
+Run the viewer with the command: 
+view-ic.py /path/to/invisible-cites/file.h5
+
+Currently, mchits and pmaps are drawn.  mctracks will come shortly.
+
+For feature requests, bug reports, or any other questions, please email Corey Adams [coreyadams [at] fas.harvard.edu]
