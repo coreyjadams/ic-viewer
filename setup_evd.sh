@@ -2,8 +2,8 @@
 
 # This section of code determines where the evd is stored.
 
-if [ -z ${GATE_DIR+x} ]; then 
-  echo "Must set up GATE framework to use this!";
+if [ -z ${ICTDIR+x} ]; then 
+  echo "Must set up IC framework to use this!";
   return 
 fi
 

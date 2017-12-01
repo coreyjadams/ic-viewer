@@ -7,15 +7,15 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 import numpy as np
 
-from view_manager3D import view_manager3D
+from .view_manager3D import view_manager3D
 
 # Wrap the spin box class to allow key signals to pass to the gui
 
-class ConnectedSpinBox(QtGui.QSpinBox):
-    """docstring for ConnectedSpinBox"""
+class connectedSpinBox(QtGui.QSpinBox):
+    """docstring for connectedSpinBox"""
     quitRequested = QtCore.pyqtSignal()
     def __init__(self):
-        super(ConnectedSpinBox, self).__init__()
+        super(connectedSpinBox, self).__init__()
         
 
     def keyPressEvent(self, e):
@@ -25,20 +25,22 @@ class ConnectedSpinBox(QtGui.QSpinBox):
                 self.quitRequested.emit()
                 return
         else:
-            super(ConnectedSpinBox,self).keyPressEvent(e )
+            super(connectedSpinBox,self).keyPressEvent(e )
 
 
 
 class gui3D(QtGui.QWidget):
 
-  def __init__(self):
+  def __init__(self, mgr):
     super(gui3D, self).__init__()
 
     # initUI should not do ANY data handling, it should only get the interface loaded
     self._view_manager = view_manager3D()
+    self._view_manager.getView().drawDetector(mgr.meta())
+    self.connectManager(mgr)
     # self.setStyleSheet("background-color:rgb(230,230,230);")
 
-  def connect_manager(self,manager):
+  def connectManager(self,manager):
     self._event_manager = manager
 
   def closeEvent(self, event):
@@ -171,7 +173,7 @@ class gui3D(QtGui.QWidget):
     try:
       event = int(self._entryBox.text())
     except:
-      print "Error, must enter an integer"
+      print("Error, must enter an integer")
       self._entryBox.setText(str(self._event_manager.entry()))
       return
     self._event_manager.go_to_entry(event)
@@ -219,7 +221,7 @@ class gui3D(QtGui.QWidget):
     self._cameraCenterLayout.addWidget(self._cameraLabel)
     self._cameraCenterXLayout = QtGui.QHBoxLayout()
     self._cameraCenterXLabel = QtGui.QLabel("X:")
-    self._cameraCenterX = ConnectedSpinBox()
+    self._cameraCenterX = connectedSpinBox()
     self._cameraCenterX.setValue(0)
     self._cameraCenterX.setRange(-10*width,10*width)
     self._cameraCenterX.quitRequested.connect(self.quit)
@@ -230,7 +232,7 @@ class gui3D(QtGui.QWidget):
     self._cameraCenterLayout.addLayout(self._cameraCenterXLayout)
     self._cameraCenterYLayout = QtGui.QHBoxLayout()
     self._cameraCenterYLabel = QtGui.QLabel("Y:")
-    self._cameraCenterY = ConnectedSpinBox()
+    self._cameraCenterY = connectedSpinBox()
     self._cameraCenterY.setValue(0)
     self._cameraCenterY.setRange(-10*height,10*height)
     self._cameraCenterY.quitRequested.connect(self.quit)
@@ -241,7 +243,7 @@ class gui3D(QtGui.QWidget):
     self._cameraCenterLayout.addLayout(self._cameraCenterYLayout)
     self._cameraCenterZLayout = QtGui.QHBoxLayout()
     self._cameraCenterZLabel = QtGui.QLabel("Z:")
-    self._cameraCenterZ = ConnectedSpinBox()
+    self._cameraCenterZ = connectedSpinBox()
     self._cameraCenterZ.setValue(0)
     self._cameraCenterZ.setRange(-10*length,10*length)   
     self._cameraCenterZ.quitRequested.connect(self.quit)
@@ -256,7 +258,7 @@ class gui3D(QtGui.QWidget):
     self._worldCenterLayout.addWidget(self._worldLabel)
     self._worldCenterXLayout = QtGui.QHBoxLayout()
     self._worldCenterXLabel = QtGui.QLabel("X:")
-    self._worldCenterX = ConnectedSpinBox()
+    self._worldCenterX = connectedSpinBox()
     self._worldCenterX.setValue(0)
     self._worldCenterX.setRange(-10*width,10*width)
     self._worldCenterX.quitRequested.connect(self.quit)
@@ -267,7 +269,7 @@ class gui3D(QtGui.QWidget):
     self._worldCenterLayout.addLayout(self._worldCenterXLayout)
     self._worldCenterYLayout = QtGui.QHBoxLayout()
     self._worldCenterYLabel = QtGui.QLabel("Y:")
-    self._worldCenterY = ConnectedSpinBox()
+    self._worldCenterY = connectedSpinBox()
     self._worldCenterY.setValue(0)
     self._worldCenterY.setRange(-10*height,10*height)
     self._worldCenterY.quitRequested.connect(self.quit)
@@ -278,7 +280,7 @@ class gui3D(QtGui.QWidget):
     self._worldCenterLayout.addLayout(self._worldCenterYLayout)
     self._worldCenterZLayout = QtGui.QHBoxLayout()
     self._worldCenterZLabel = QtGui.QLabel("Z:")
-    self._worldCenterZ = ConnectedSpinBox()
+    self._worldCenterZ = connectedSpinBox()
     self._worldCenterZ.setValue(0)
     self._worldCenterZ.setRange(-10*length,10*length)   
     self._worldCenterZ.quitRequested.connect(self.quit)
@@ -331,19 +333,19 @@ class gui3D(QtGui.QWidget):
     # self._view_manager.setCameraPosition(1.5*(_max - _min))
     # # Move the center of the camera to the center of the view:
     # _ctr = 0.5*(_min + _max)
-    # print _ctr
+    # print(_ctr)
     # self._view_manager.pan(_ctr[0], _ctr[1], _ctr[2])
 
   # def goToPresetCameraPosition(self):
   #   if self.sender() == self._presetUButton:
   #       self._view_manager.setCameraPosition(pos=(0, 500, -500))
-  #       print "U Plane"
+  #       print("U Plane")
   #   if self.sender() == self._presetVButton:
   #       self._view_manager.setCameraPosition(pos=(0, 500, 500))
-  #       print "V Plane"
+  #       print("V Plane")
   #   if self.sender() == self._presetYButton:
   #       self._view_manager.setCameraPosition(pos=(0, 500, 0))
-  #       print "Y Plane"
+  #       print("Y Plane")
 
 
   def restoreDefaultsWorker(self):
@@ -423,21 +425,21 @@ class gui3D(QtGui.QWidget):
   def refreshCenterView(self):
 
     # for child in self.centerWidget.children():
-    #   print type(child)
+    #   print(type(child))
     #   if type(child) == QtGui.QVBoxLayout:
     #     layout = child
 
-    # print layout.children()
-    # print layout
+    # print(layout.children())
+    # print(layout)
 
     widget = self._view_manager.getDrawListWidget()
     # for child in widget.children():
-    #   print child
+    #   print(child)
 
-    # print widget
-    # print layout
+    # print(widget)
+    # print(layout)
 
-    # print layout.children()
+    # print(layout.children())
 
     # for i in reversed(range(self.centerWidget.layout.count())): 
         # layout.itemAt(i).widget().setParent(None)
@@ -446,9 +448,8 @@ class gui3D(QtGui.QWidget):
     self.centerWidget.setVisible(True)   
 
 
-  def metaChanged(self, meta):
+  # def metaChanged(self, meta):
     # self._event_manager.meta()refresh_meta()
-    self._view_manager.getView().updateMeta(meta)
 
 
   def initUI(self):
@@ -497,7 +498,7 @@ class gui3D(QtGui.QWidget):
       self._event_manager.prev()
       return
     if e.key() == QtCore.Qt.Key_C:
-      # print "C was pressed"
+      # print("C was pressed")
       if e.modifiers() and QtCore.Qt.ControlModifier :
         self.quit()
         return

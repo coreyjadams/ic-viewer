@@ -1,14 +1,14 @@
 # Import the class that manages the view windows
-from viewport3D import viewport3D
+from .viewport3D import viewport3D
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph as pg
 
-colorMap = {'ticks': [(1, (151, 30, 22, 200)),
-                      (0.791, (0, 181, 226, 200)),
-                      (0.645, (76, 140, 43, 200)),
-                      (0.47, (0, 206, 24, 200)),
-                      (0.33333, (254, 209, 65, 200)),
-                      (0, (255, 255, 255, 200))],
+colorMap = {'ticks': [(1, (151, 30, 22, 125)),
+                      (0.791, (0, 181, 226, 125)),
+                      (0.645, (76, 140, 43, 125)),
+                      (0.47, (0, 206, 24, 125)),
+                      (0.33333, (254, 209, 65, 125)),
+                      (0, (255, 255, 255, 125))],
             'mode': 'rgb'}
 
 class view_manager3D(QtCore.QObject):
@@ -39,7 +39,7 @@ class view_manager3D(QtCore.QObject):
         self._lowerLevel.returnPressed.connect(self.colorsChanged)
 
         self._lowerLevel.setText(str(0.0))
-        self._upperLevel.setText(str(1.0))
+        self._upperLevel.setText(str(10.0))
 
         # Fix the maximum width of the widgets:
         self._upperLevel.setMaximumWidth(35)
@@ -81,7 +81,7 @@ class view_manager3D(QtCore.QObject):
         self.setCenter((0.0,0.0,0.0))
         self.setCameraPosition((1.5*dims[0], 1.5*dims[1], 1.0*dims[2]))
         # Move the center of the camera to the center of the view:
-        self._view.pan(dims[0]*0.5, dims[1] * 0.5, dims[2]*0.5)
+        # self._view.pan(dims[0]*0.5, dims[1] * 0.5, dims[2]*0.5)
 
     def getView(self):
         return self._view
@@ -108,4 +108,4 @@ class view_manager3D(QtCore.QObject):
         self._view.update()
 
     def restoreDefaults(self):
-        print "restoreDefaults called but not implemented"
+        print("restoreDefaults called but not implemented")

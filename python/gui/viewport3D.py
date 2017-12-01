@@ -2,7 +2,7 @@
 try:
     import pyqtgraph.opengl as gl
 except:
-    print "Error, must have open gl to use this viewer."
+    print("Error, must have open gl to use this viewer.")
     exit(-1)
 
 from pyqtgraph.Qt import QtGui, QtCore
@@ -22,6 +22,7 @@ class viewport3D(gl.GLViewWidget):
         # add a view box, which is a widget that allows an image to be shown
         # add an image item which handles drawing (and refreshing) the image
         self.setBackgroundColor((0,0,0,255))
+        # self.setBackgroundColor((255,255,255,0))
 
         self._dims = None
 
@@ -31,13 +32,60 @@ class viewport3D(gl.GLViewWidget):
         # self.pan(0,0,self._geometry.length())
         self.show()
 
+    def drawDetector(self, meta):
+        
+        _len_x = meta.len_x()
+        _len_y = meta.len_y()
+        _len_z = meta.len_z()
+        self._dims = [_len_x, _len_y, _len_z]
+
+        # # Draw a cylinder for the detector:
+
+        cylinderPoints = gl.MeshData.cylinder(2, 10, 
+            radius=[meta.radius(), meta.radius()], 
+            length=meta.len_z())
+        cylinder = gl.GLMeshItem(meshdata=cylinderPoints,
+                                 drawEdges=True,
+                                 drawFaces=False,
+                                 smooth=False,
+                                 glOptions='translucent')
+        # cylinder.translate(0,0,-_len_z*0.5)
+        self.addItem(cylinder)
+
+        # Draw locations of all sipms and PMTs
+
+        # Using points to draw pmts and sipms, since a scatter plot is
+        # easy and cheap to draw
+        pmt_data = meta.pmt_data()
+        n_pmts = len(pmt_data.index)
+
+        _pmt_pts = np.ndarray((n_pmts, 3))
+        _pmt_pts[:,0] = pmt_data.X
+        _pmt_pts[:,1] = pmt_data.Y
+        _pmt_pts[:,2] = meta.max_z()
+        
+        pmtPointsCollection = gl.GLScatterPlotItem(pos=_pmt_pts,
+                                                   size=20.32,
+                                                   color=[0,0,1.0,1.0], 
+                                                   pxMode=False)
+        self.addItem(pmtPointsCollection)
+
+        _sipm_pts = np.ndarray((len(meta.sipm_data().index), 3))
+        _sipm_pts[:,0] = meta.sipm_data().X
+        _sipm_pts[:,1] = meta.sipm_data().Y
+        _sipm_pts[:,2] = meta.min_z()
+        sipmPointsCollection = gl.GLScatterPlotItem(pos=_sipm_pts,
+                                                    size=2,
+                                                    color=[0,1.0,1.0,1.0],
+                                                    pxMode=False)
+        self.addItem(sipmPointsCollection)
+
+        self.setCenter((0,0,0.5*_len_z))
+        
+
     def updateMeta(self,meta):
 
-        _len_x = meta.dim_x()
-        _len_y = meta.dim_y()
-        _len_z = meta.dim_z()
-    
-        self._dims = [_len_x, _len_y, _len_z]
+
 
         self.setCenter((0,0,0))
     
@@ -149,7 +197,6 @@ class viewport3D(gl.GLViewWidget):
             if distance != 0:
                 elevation = math.asin(Z / distance)
             else:
-                print Z
                 elevation = math.copysign(Z)
             azimuth *= 180./math.pi
             elevation *= 180./math.pi

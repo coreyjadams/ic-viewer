@@ -1,11 +1,11 @@
-from database import recoBase3D
+from .database import recoBase3D
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
 import numpy
 try:
     import pyqtgraph.opengl as gl
 except:
-    print "Error, must have open gl to use this viewer."
+    print("Error, must have open gl to use this viewer.")
     exit(-1)
 
 class mctrack(recoBase3D):
@@ -25,7 +25,7 @@ class mctrack(recoBase3D):
     def drawObjects(self, view_manager, event, meta):
 
         # Get the data from the file:
-        _mc_tracks = event.GetMCTracks()
+        _mc_tracks = event.mctracks()
 
 
         _running_min = None

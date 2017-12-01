@@ -1,4 +1,4 @@
-from .database import recoBase
+from .database import recoBase3D
 from pyqtgraph.Qt import QtGui, QtCore
 import numpy
 try:
@@ -7,13 +7,13 @@ except:
     print("Error, must have open gl to use this viewer.")
     exit(-1)
 
-class sparse3d(recoBase):
+class pmap(recoBase3D):
 
-    """docstring for sparse3d"""
+    """docstring for pmap"""
 
     def __init__(self):
-        super(sparse3d, self).__init__()
-        self._product_name = 'sparse3d'
+        super(pmap, self).__init__()
+        self._product_name = 'pmap'
         self._gl_voxel_mesh = None
         self._x = None
         self._y = None
@@ -45,30 +45,57 @@ class sparse3d(recoBase):
                                             [4, 5, 7],
                                             [5, 6, 7]])
 
-
     # this is the function that actually draws the cluster.
-    def drawObjects(self, view_manager, io_manager, meta):
+    def drawObjects(self, view_manager, io, meta):
 
         # Get the data from the file:
-        _map = io_manager.map()
-
+        # print (io.s2si())
 
         self._meta = meta
+        # Loop over the s2si pmap and fill the voxels
+        # Z position has to be calculated based on the difference in time between s1 ands s2
 
-        self._x, self._y, self._z = numpy.where(_map != 0.0)
+        t0 = 1e-3*io.s1().peaks[0].tpeak
 
 
-        self._vals = _map[self._x,self._y,self._z]
+        self._x = []
+        self._y = []
+        self._z = []
+        self._vals = []
+
+        i = 0
+        for i_peak in range(io.s2si().number_of_peaks):
+            for sipm in io.s2si().sipms_in_peak(i_peak):
+                wfm = io.s2si().sipm_waveform(i_peak,sipm)
+                # Fill the variables as needed:
+                for t, e in zip(wfm.t, wfm.E):
+                    if e != 0:
+                        self._x.append(io.sipm_data().X[sipm])
+                        self._y.append(io.sipm_data().Y[sipm])
+                        self._z.append((1e-3*t - t0))
+                        # print(t)
+                        # print(t0)
+                        # print (t0 - t)
+                        self._vals.append(e)
+
+            # self._points[i][0] = _mc_hits[i].GetPosition().x()
+            # self._points[i][1] = _mc_hits[i].GetPosition().y()
+            # self._points[i][2] = _mc_hits[i].GetPosition().z()
+            # self._vals[i] = _mc_hits[i].GetAmplitude()
+
+            i += 1
+
+        self._min_coords = numpy.asarray((numpy.min(self._x), 
+                                         numpy.min(self._y), 
+                                         numpy.min(self._z)))
+        self._max_coords = numpy.asarray((numpy.max(self._x), 
+                                         numpy.max(self._y), 
+                                         numpy.max(self._z)))
 
         self.redraw(view_manager)
 
 
-
-        # self.setColors(view_manager.getLookupTable(), view_manager.getLevels())
-        # self.redraw(view_manager)
-
     def redraw(self, view_manager):
-
 
         if self._gl_voxel_mesh is not None:
             view_manager.getView().removeItem(self._gl_voxel_mesh)
@@ -87,6 +114,7 @@ class sparse3d(recoBase):
         mesh.setGLOptions("translucent")        
         self._gl_voxel_mesh = mesh
         view_manager.getView().addItem(self._gl_voxel_mesh)
+
 
     def buildTriangleArray(self, view_manager):
         verts = None
@@ -146,9 +174,9 @@ class sparse3d(recoBase):
         
         #Move the points to the right coordinate in this space
 
-        verts_box[:,0] += x - meta.min_x()
-        verts_box[:,1] += y - meta.min_y()
-        verts_box[:,2] += z - meta.min_z()
+        verts_box[:,0] += x
+        verts_box[:,1] += y
+        verts_box[:,2] += z
 
 
         # color_arr = numpy.ndarray((12, 4))
@@ -177,8 +205,13 @@ class sparse3d(recoBase):
             view_manager.getView().removeItem(self._gl_voxel_mesh)
 
         self._gl_voxel_mesh = None
-        self._meta = None
-        self._id_summed_charge = dict()
+        self._points = None
+        self._vals = None
+        self._colors = None
+        self._x = []
+        self._y = []
+        self._z = []
+        self._vals = []
 
     def refresh(self, view_manager):
         self.redraw(view_manager)

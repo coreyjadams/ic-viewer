@@ -3,8 +3,10 @@
 import collections
 
 import pyqtgraph.opengl as gl
-from mchit import mchit
-from mctrack import mctrack
+from .mchit import mchit
+from .mctrack import mctrack
+from .pmap import pmap
+from .cluster import cluster
 
 class drawableItems3D(object):
 
@@ -17,6 +19,9 @@ class drawableItems3D(object):
         self._drawableClasses = collections.OrderedDict()
         self._drawableClasses.update({'MCHits' : mchit})
         self._drawableClasses.update({'MCTracks' : mctrack})
+        self._drawableClasses.update({'PMaps' : pmap})
+        self._drawableClasses.update({'Clusters' : cluster})
+        # self._drawableClasses.update({'MCTracks' : mctrack})
         # self._drawableClasses.update({'sparse3d': sparse3d})
         # self._drawableClasses.update({'SiPM MCHits': sipmmchit})
 

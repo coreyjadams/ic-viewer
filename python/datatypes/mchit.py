@@ -1,10 +1,10 @@
-from database import recoBase3D
+from .database import recoBase3D
 from pyqtgraph.Qt import QtGui, QtCore
 import numpy
 try:
     import pyqtgraph.opengl as gl
 except:
-    print "Error, must have open gl to use this viewer."
+    print("Error, must have open gl to use this viewer.")
     exit(-1)
 
 class mchit(recoBase3D):
@@ -24,21 +24,21 @@ class mchit(recoBase3D):
     def drawObjects(self, view_manager, event, meta):
 
         # Get the data from the file:
-        _mc_hits = event.GetMCHits()
+        _mc_hits = event.mchits()
 
 
 
-        self._points = numpy.ndarray((_mc_hits.size(),3))
-        self._vals   = numpy.ndarray((_mc_hits.size()))
-        self._colors = numpy.ndarray((_mc_hits.size(),4))
+        self._points = numpy.ndarray((len(_mc_hits),3))
+        self._vals   = numpy.ndarray((len(_mc_hits)))
+        self._colors = numpy.ndarray((len(_mc_hits),4))
         
 
         i = 0
         for hit in _mc_hits:
-            self._points[i][0] = _mc_hits[i].GetPosition().x()
-            self._points[i][1] = _mc_hits[i].GetPosition().y()
-            self._points[i][2] = _mc_hits[i].GetPosition().z()
-            self._vals[i] = _mc_hits[i].GetAmplitude()
+            self._points[i][0] = _mc_hits[i].X
+            self._points[i][1] = _mc_hits[i].Y
+            self._points[i][2] = _mc_hits[i].Z
+            self._vals[i] = _mc_hits[i].E
 
             i += 1
 
@@ -67,9 +67,10 @@ class mchit(recoBase3D):
         #make a mesh item: 
         mesh = gl.GLScatterPlotItem(pos=self._points,
                                     color=self._colors,
-                                    size=10)
+                                    size=1,
+                                    pxMode=False)
 
-        mesh.setGLOptions("translucent")        
+        # mesh.setGLOptions("opaque")        
         self._gl_points_collection = mesh
         view_manager.getView().addItem(self._gl_points_collection)
 
@@ -78,10 +79,8 @@ class mchit(recoBase3D):
         _max = _levels[1]
 
         if _voxel_value >= _max:
-            # print "Max " + str(_voxel_value)
             return _lookupTable[-1]
         elif _voxel_value < _min:
-            # print "Min "  + str(_voxel_value)
             return (0,0,0,0)
         else:
             index = 255*(_voxel_value - _min) / (_max - _min)

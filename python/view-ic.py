@@ -9,7 +9,7 @@ try:
     import pyqtgraph.opengl as gl
 
 except:
-    print "Must have opengl to use the 3D viewer, exiting."
+    print("Must have opengl to use the 3D viewer, exiting.")
     exit()
 
 from gui import evdgui3D
@@ -40,13 +40,10 @@ def main():
     manager = evd_manager_3D(args.file)
 
 
-    thisgui = evdgui3D()
-    thisgui.connect_manager(manager)
-    # manager.goToEvent(0)
+    thisgui = evdgui3D(manager)
     thisgui.initUI()
 
     manager.eventChanged.connect(thisgui.update)
-    manager.metaRefreshed.connect(thisgui.metaChanged)
 
 
     signal.signal(signal.SIGINT, sigintHandler)
