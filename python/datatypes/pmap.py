@@ -57,6 +57,30 @@ class pmap(recoBase3D):
 
         t0 = 1e-3*io.s1().peaks[0].tpeak
 
+        # Accumulate the total pes for each peak in S1, S2, and S2si:
+        
+        for i_peak in range(io.s1().number_of_peaks):
+            print("Energy of S1, peak {}: {}".format(
+                i_peak,
+                io.s1().peaks[i_peak].total_energy))
+
+        print ()
+
+        for i_peak in range(io.s2().number_of_peaks):
+            print("Energy of S2, peak {}: {}".format(
+                i_peak,
+                io.s2().peaks[i_peak].total_energy))
+        #     for pmt in io.s1().pmts_in_peak(i_peak):
+        #         wfm = io.s1().pmt_waveform(i_peak, pmt)
+        #         for t, e in zip(wfm.t, wfm.E):
+        #             print(e)
+
+
+        # for i_peak in range(io.s2si().number_of_peaks):
+        #     for sipm in io.s2si().sipms_in_peak(i_peak):
+        #         wfm = io.s2si().sipm_waveform(i_peak,sipm)
+        #         # Fill the variables as needed:
+        #         for t, e in zip(wfm.t, wfm.E):
 
         self._x = []
         self._y = []

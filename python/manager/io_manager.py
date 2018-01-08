@@ -1,5 +1,6 @@
 from invisible_cities.database import load_db
 from invisible_cities.io import pmap_io, mchits_io
+import os
 
 class io_manager(object):
     """docstring for io_manager"""
@@ -13,7 +14,8 @@ class io_manager(object):
         self._events = []
         self._entry = 0
         self._max_entry = 0
-        self._run = 5
+        self._run = 0
+        self._subrun = 0
 
     def event(self):
         return self._events[self._entry]
@@ -24,10 +26,12 @@ class io_manager(object):
     def run(self):
         return self._run
 
+    def subrun(self):
+        return self._subrun
+
     def set_file(self, _file_name):
 
 
-        print("Got it: {}".format(_file_name))
         try:
             self._s1_dict, self._s2_dict, self._s2si_dict = pmap_io.load_pmaps(_file_name)
             self._has_pmaps = True
@@ -42,13 +46,22 @@ class io_manager(object):
             self._has_mc = False
             pass
 
+        _strs = os.path.basename(_file_name).split("_")
+        i = 0
+        for s in _strs:
+            if s == "pmaps":
+                break
+            i += 1
+        self._subrun = int(_strs[i+1])
+        self._run = int(_strs[i+2])
+
         self._has_reco = False
         if not (self._has_reco or self._has_pmaps or self._has_mc):
             print("Couldn't load file {}.".format(_file_name))
             exit(-1)
 
         # Use the S2_dict as the list of events:
-        self._events = list(self._s1_dict.keys())
+        self._events = list(set(self._s1_dict.keys()).intersection(set(self._s2si_dict.keys())))
         self._max_entry = len(self._events) -1
 
     def s1(self, event=-1):

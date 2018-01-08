@@ -63,7 +63,7 @@ class gui3D(QtGui.QWidget):
     # subrunLabel = "Subrun: " + str(self._event_manager.subrun())
     # self._subrunLabel.setText(subrunLabel)
     self._event_manager.drawFresh(self._view_manager)
-    
+
 
   def updateCameraInfo(self, cameraPos=None,worldPos=None):
 

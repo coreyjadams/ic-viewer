@@ -25,8 +25,8 @@ class NEW_meta(object):
         self._y_max   = det_geo.YMAX[0]
         self._z_max   = det_geo.ZMAX[0]
         self._r_max   = det_geo.RMAX[0]
-        self._y_n_pixels = self._x_max - self._x_min
-        self._x_n_pixels = self._y_max - self._y_min
+        self._x_n_pixels = (self._x_max - self._x_min) / 10.
+        self._y_n_pixels = (self._y_max - self._y_min) / 10.
         self._z_n_pixels = self._z_max - self._z_min
         self._size_voxel_x = 10
         self._size_voxel_y = 10

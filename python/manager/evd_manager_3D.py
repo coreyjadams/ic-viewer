@@ -57,7 +57,6 @@ class evd_manager_3D(evd_manager_base):
         # self.clearTruth()
 
     def drawFresh(self, view_manager):
-
         self.clearAll(view_manager)
         # Draw objects in a specific order defined by drawableItems
         order = self._drawableItems.getListOfTitles()

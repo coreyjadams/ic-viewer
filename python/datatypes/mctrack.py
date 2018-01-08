@@ -26,23 +26,24 @@ class mctrack(recoBase3D):
 
         # Get the data from the file:
         _mc_tracks = event.mctracks()
-
+        print(_mc_tracks.keys())
 
         _running_min = None
         _running_max = None
-        for track in _mc_tracks:
-
+        for track_id in _mc_tracks:
+            track = _mc_tracks[track_id]
+            print(type(track))
             # construct a line for this track:
-            points = track.GetHits()
-            x = numpy.zeros(points.size())
-            y = numpy.zeros(points.size())
-            z = numpy.zeros(points.size())
+            points = track.hits
+            x = numpy.zeros(len(points))
+            y = numpy.zeros(len(points))
+            z = numpy.zeros(len(points))
 
             i = 0
             for point in points:
-                x[i] = point.GetPosition().x()
-                y[i] = point.GetPosition().y()
-                z[i] = point.GetPosition().z()
+                x[i] = point.X
+                y[i] = point.Y
+                z[i] = point.Z
                 i+= 1
 
             pts = numpy.vstack([x,y,z]).transpose()
@@ -60,8 +61,8 @@ class mctrack(recoBase3D):
                 _running_max = numpy.maximum(_this_max, _running_max)
 
 
-            pen = pg.mkPen((255,0,0), width=3)
-            line = gl.GLLinePlotItem(pos=pts,color=(255,255,0,255))
+            pen = pg.mkPen((255,0,0), width=8)
+            line = gl.GLLinePlotItem(pos=pts,color=(255,0,0,255),width=8)
             view_manager.getView().addItem(line)
             self._drawnObjects.append(line)
 

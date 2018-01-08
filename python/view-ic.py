@@ -43,8 +43,6 @@ def main():
     thisgui = evdgui3D(manager)
     thisgui.initUI()
 
-    manager.eventChanged.connect(thisgui.update)
-
 
     signal.signal(signal.SIGINT, sigintHandler)
     timer = QtCore.QTimer()

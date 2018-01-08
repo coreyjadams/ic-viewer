@@ -5,7 +5,6 @@ from .io_manager import io_manager
 class evd_manager_base(QtCore.QObject):
 
     eventChanged = QtCore.pyqtSignal()
-    drawFreshRequested = QtCore.pyqtSignal()
     metaRefreshed = QtCore.pyqtSignal(NEW_meta)
 
     """docstring for lariat_manager"""

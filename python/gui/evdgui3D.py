@@ -27,8 +27,6 @@ class evdgui3D(gui3D):
         super(evdgui3D, self).initUI()
         # self.metaChanged(self._event_manager.io_manager())
         self._view_manager.setRangeToMax()
-
-        # Change the name of the labels for lariat:
         self.update()
 
     def refreshColors(self):
